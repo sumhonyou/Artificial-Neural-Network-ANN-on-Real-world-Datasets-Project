@@ -450,7 +450,6 @@ test_results = {
     "roc_auc": roc_auc_test,
     "test_loss": test_loss,
     "confusion_matrix": cm_test,
-    "classification_report": classification_report(y_test, y_test_pred, output_dict=True),
     "train_acc_history": train_acc_hist,
     "val_acc_history": val_acc_hist,
     "train_loss_history": train_loss_hist,
