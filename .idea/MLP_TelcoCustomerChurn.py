@@ -520,9 +520,3 @@ def plot_mlp_structure(mlp):
 
 # call after training
 plot_mlp_structure(final_model)
-
-'''
-Hon You
-- 1 neuron in output layer is correct for binary classification task (churn vs non-churn)
-- This sigmoid activation function is appropriate for binary classification as it outputs values between 0 and 1, representing probabilities for class 1 (churn).
-'''
