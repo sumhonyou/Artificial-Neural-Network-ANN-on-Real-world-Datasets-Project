@@ -9,7 +9,7 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 # Make the plots to look nicer
-sns.set(style="whitegrid")
+sns.set_theme(style="whitegrid")
 # Import SMOTE for oversampling
 from imblearn.over_sampling import SMOTE
 # Graph Neural Network
@@ -32,7 +32,6 @@ print(df.info())
 # Show summary statistics for numerical columns (SeniorCitizen, tenure, MonthlyCharges)
 print("\nSummary statistics for numerical columns:")
 print(df.describe())
-
 
 ## Phrase 2: Exploratory Data Analysis (EDA)
 # Churn distribution (counts and percentage)
@@ -70,7 +69,6 @@ plt.xlabel("Contract type")
 plt.ylabel("Count")
 plt.xticks(rotation=15)
 plt.show()
-
 
 ## Phrase 3: Data Cleaning
 # 1. Handle Total Charges
@@ -118,7 +116,6 @@ print("\nColumns after dropping customerID:")
 print(df.columns)
 print("\nCurrent shape of dataframe (rows, columns):", df.shape)
 
-
 ## Phrase 4: Feature and Target Separation & One-Hot Encoding (technique to convert categorical variables into numerical format)
 # 1. Separate features and target
 # Target variable
@@ -149,7 +146,6 @@ print("Encoded shape:", X_encoded.shape)
 print("Encoded feature columns:")
 print(X_encoded.columns[:10])  # print first 10 to check
 
-
 # Phase 5: Train, Validation, Test Split and Standardisation
 # 1. Split into Test 70 / 15 / 15
 # 1st split: 70% train, 30% temp (val + test)
@@ -158,7 +154,7 @@ X_train, X_temp, y_train, y_temp = train_test_split(
     y,
     train_size=0.7,    # 70% training data
     random_state=42,   # fixed seed for reproducibility
-    stratify=y        # keep churn ratio similar across splits
+    stratify=y         # keep churn ratio similar across splits
 )
 
 # 2nd split: for the 30%, half for validation, half for test to 15% / 15%
@@ -215,34 +211,29 @@ print("X_test_scaled shape:", X_test_scaled.shape)
 input_dimension = X_train_scaled.shape[1]
 print("\nInput dimension (number of features):", input_dimension)
 
-
-
-# Fucntion to train and evaluate the MLP with early stopping
+# Function to train and evaluate the MLP with early stopping
 def train_and_evaluate(X_train_scaled, y_train, X_val_scaled, y_val,
                        hidden_layers=(16,),
-                       activation='relu', # relu used for faster convergence (default)
-                       alpha=0.005, # L2 regularization term to reduce overfitting
-                       learning_rate_init=0.001, # step size in gradient descent [adjusting weight updates] Chagen 
-                    #    learning_rate='adaptive',
-                       batch_size=64, # number of samples per gradient update
+                       activation='relu',        # relu used for faster convergence (default)
+                       alpha=0.005,              # L2 regularization term to reduce overfitting
+                       learning_rate_init=0.001, # Step size in gradient descent (adjusting weight updates)
+                       #  Change learning_rate='adaptive'
+                       batch_size=64,            # Number of samples per gradient update
                        max_epochs=200,
                        random_state=42,
                        patience=15):
-    """
-    Train MLP epoch-by-epoch with manual early stopping.
-    Returns model, train_acc_history, val_acc_history.
-    """
+  
     # Initialize MLPClassifier model
     mlp = MLPClassifier(
         hidden_layer_sizes=hidden_layers,
         activation=activation,
-        solver='adam', # optimizer algorithm for automatic adjustment of weights during training     
+        solver='adam',   # Optimizer algorithm for automatic adjustment of weights during training     
         alpha=alpha,        
         learning_rate_init=learning_rate_init,
         batch_size=batch_size,
         random_state=random_state,
-        max_iter=1, # train one epoch at a time
-        warm_start=True, # keep previous weights when calling fit multiple times instead reinitializing
+        max_iter=1,      # Train one epoch at a time
+        warm_start=True, # Keep previous weights when calling fit multiple times instead reinitializing
     )
     
     # Histories list to store accuracy and loss
@@ -251,24 +242,17 @@ def train_and_evaluate(X_train_scaled, y_train, X_val_scaled, y_val,
     train_loss_hist = [] 
     val_loss_hist   = [] 
 
-    best_val_acc = 0.0 # decimal to track best validation accuracy
-    epochs_without_improvement = 0 # how many count of epochs without improvement
+    best_val_acc = 0.0             # Decimal to track best validation accuracy
+    epochs_without_improvement = 0 # How many count of epochs without improvement
 
     for epoch in range(1, max_epochs + 1):
         # train model
         mlp.fit(X_train_scaled, y_train)
 
+        y_train_proba = mlp.predict_proba(X_train_scaled)[:, 1] # Probability of positive class (churn=1) for log loss calculation
+        y_val_proba   = mlp.predict_proba(X_val_scaled)[:, 1]   # Pobability of positive class (churn=1) for log loss calculation
+        # Predict_proba gives probability estimates for each class, use when want to know how confident the model is about its predictions; used in log-loss, ROC-AUC, etc.
 
-        '''
-        # Predict probabilities for train and validation sets
-        y_train_pred  = mlp.predict(X_train_scaled) # predicted class labels not used here just put here as if use test data need to predict first
-        y_val_pred    = mlp.predict(X_val_scaled) # predicted class labels not used here just put here as if use test data need to predict first
-        '''
-        y_train_proba = mlp.predict_proba(X_train_scaled)[:, 1] # probability of positive class (churn=1) for log loss calculation
-        y_val_proba   = mlp.predict_proba(X_val_scaled)[:, 1] # probability of positive class (churn=1) for log loss calculation
-        # predict_proba gives probability estimates for each class, use when want to know how confident the model is about its predictions; used in log-loss, ROC-AUC, etc.
-
-        # Evaluate
         # Calculate training and validation accuracy
         train_acc = mlp.score(X_train_scaled, y_train)
         val_acc   = mlp.score(X_val_scaled, y_val)
@@ -331,7 +315,6 @@ plt.show()
 print("\nClassification Report - Validation Set:")
 print(classification_report(y_val, y_val_pred))
 
-
 # Plot training and validation accuracy curves
 epochs = range(1, len(train_acc_hist) + 1)
 
@@ -344,7 +327,6 @@ plt.title("Training vs Validation Accuracy")
 plt.legend()
 plt.show()
 
-
 # Plot training and validation loss curves
 epochs = range(1, len(train_loss_hist) + 1)
 
@@ -356,7 +338,6 @@ plt.ylabel("Log Loss")
 plt.title("Training vs Validation Loss")
 plt.legend()
 plt.show()
-
 
 # Validation ROC (ROC-AUC curve)
 y_val_proba = final_model.predict_proba(X_val_scaled)[:, 1] # pick the probability of positive class (churn=1) for each sample, used in roc_curve and roc_auc_score
@@ -375,7 +356,6 @@ plt.legend(loc="lower right")
 plt.show()
 
 print(f"Validation ROC-AUC: {roc_auc:.4f}")
-
 
 # TEST EVALUATION
 print("\n=== TEST EVALUATION ===")
@@ -469,13 +449,10 @@ for k, v in test_results.items():
     else:
         print(f"  {k}: {type(v).__name__}")
 
-
 # Visualise the MLP structure
 def plot_mlp_structure(mlp):
-    """
-    Simple visualisation of MLP architecture using circles and lines.
-    """
-    # layer sizes from weights
+    
+    # Layer sizes from weights
     layer_sizes = [mlp.coefs_[0].shape[0]]  # input layer
     layer_sizes += [w.shape[1] for w in mlp.coefs_]  # hidden + output
 
@@ -486,7 +463,7 @@ def plot_mlp_structure(mlp):
     fig, ax = plt.subplots(figsize=(10, 6))
     ax.axis('off')
 
-    # store neuron positions to draw connections
+    # Store neuron positions to draw connections
     positions = []
 
     for i, layer_size in enumerate(layer_sizes):
@@ -514,8 +491,7 @@ def plot_mlp_structure(mlp):
         ax.text(x, 1.03, f"{title}\n({layer_size} neurons)",
                 ha='center', va='bottom', fontsize=9)
 
-
     plt.show()
 
-# call after training
+# Call after training
 plot_mlp_structure(final_model)
