@@ -13,13 +13,11 @@ Computer Intelligence Assignment
 3. Choose ananconda Env or you may create a temporary virtual environment (env) [for creating the temporary virtual environment please watch YouTube video]
 4. <b>Done</b> (remember to check whether need commmit or not even though you didn't do anything on the code)
 
-
 ## What Have We Done
 - Tunning the MLP model
 - Visualisation 
 - Include early stopping
 - Include metrics (classification, confusion matrix, training & validation linear graph analysis)
-
 
 ### Challenges that we have Met 
 1. Dataset is unbalance (No > Yes) create bias in model inferencing
