@@ -14,10 +14,11 @@ sns.set_theme(style="whitegrid")
 from imblearn.over_sampling import SMOTE
 # Graph Neural Network
 from sklearn.metrics import confusion_matrix, classification_report, roc_curve, roc_auc_score, log_loss
+# MLP Classifier 
 from sklearn.neural_network import MLPClassifier
 
 ## Dataset Loading + Exploratory Data Analysis + Data Cleaning + Encoding + Splitting + Scaling
-## Phrase 1: Dataset Loading
+## ===== Phrase 1: Dataset Loading =====
 # Load csv file
 df = pd.read_csv("TelcoCustomerChurn.csv")
 
@@ -33,7 +34,7 @@ print(df.info())
 print("\nSummary statistics for numerical columns:")
 print(df.describe())
 
-## Phrase 2: Exploratory Data Analysis (EDA)
+## ===== Phrase 2: Exploratory Data Analysis (EDA) =====
 # Churn distribution (counts and percentage)
 print("\nChurn value counts:")
 print(df['Churn'].value_counts())
@@ -70,7 +71,7 @@ plt.ylabel("Count")
 plt.xticks(rotation=15)
 plt.show()
 
-## Phrase 3: Data Cleaning
+## ===== Phrase 3: Data Cleaning =====
 # 1. Handle Total Charges
 # In the original dataset, TotalCharges has some blank spaces " "
 # which make the whole column type 'object' instead of float.
@@ -116,7 +117,7 @@ print("\nColumns after dropping customerID:")
 print(df.columns)
 print("\nCurrent shape of dataframe (rows, columns):", df.shape)
 
-## Phrase 4: Feature and Target Separation & One-Hot Encoding (technique to convert categorical variables into numerical format)
+## ===== Phrase 4: Feature and Target Separation & One-Hot Encoding (technique to convert categorical variables into numerical format) =====
 # 1. Separate features and target
 # Target variable
 y = df['Churn'] # label that we want to predict
@@ -146,7 +147,7 @@ print("Encoded shape:", X_encoded.shape)
 print("Encoded feature columns:")
 print(X_encoded.columns[:10])  # print first 10 to check
 
-# Phase 5: Train, Validation, Test Split and Standardisation
+# ===== Phase 5: Train, Validation, Test Split and Standardisation =====
 # 1. Split into Test 70 / 15 / 15
 # 1st split: 70% train, 30% temp (val + test)
 X_train, X_temp, y_train, y_temp = train_test_split(
@@ -211,13 +212,12 @@ print("X_test_scaled shape:", X_test_scaled.shape)
 input_dimension = X_train_scaled.shape[1]
 print("\nInput dimension (number of features):", input_dimension)
 
-# Function to train and evaluate the MLP with early stopping
+# ===== Function to train and evaluate the MLP with early stopping =====
 def train_and_evaluate(X_train_scaled, y_train, X_val_scaled, y_val,
                        hidden_layers=(16,),
                        activation='relu',        # relu used for faster convergence (default)
                        alpha=0.005,              # L2 regularization term to reduce overfitting
                        learning_rate_init=0.001, # Step size in gradient descent (adjusting weight updates)
-                       #  Change learning_rate='adaptive'
                        batch_size=64,            # Number of samples per gradient update
                        max_epochs=200,
                        random_state=42,
@@ -251,7 +251,6 @@ def train_and_evaluate(X_train_scaled, y_train, X_val_scaled, y_val,
 
         y_train_proba = mlp.predict_proba(X_train_scaled)[:, 1] # Probability of positive class (churn=1) for log loss calculation
         y_val_proba   = mlp.predict_proba(X_val_scaled)[:, 1]   # Pobability of positive class (churn=1) for log loss calculation
-        # Predict_proba gives probability estimates for each class, use when want to know how confident the model is about its predictions; used in log-loss, ROC-AUC, etc.
 
         # Calculate training and validation accuracy
         train_acc = mlp.score(X_train_scaled, y_train)
@@ -345,10 +344,10 @@ y_val_proba = final_model.predict_proba(X_val_scaled)[:, 1] # pick the probabili
 fpr, tpr, thresholds = roc_curve(y_val, y_val_proba)
 # AUC near 0.5 means random guessing, 1.0 means perfect classifier
 roc_auc = roc_auc_score(y_val, y_val_proba)
-# The ROC curve should be above the diagonal line (random guessing dotted line)
+
 plt.figure()
 plt.plot(fpr, tpr, label=f"ROC curve (AUC = {roc_auc:.3f})")
-plt.plot([0, 1], [0, 1], linestyle='--')  # random baseline
+plt.plot([0, 1], [0, 1], linestyle='--')
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
 plt.title("ROC Curve - Validation Set")
@@ -357,7 +356,7 @@ plt.show()
 
 print(f"Validation ROC-AUC: {roc_auc:.4f}")
 
-# TEST EVALUATION
+# ===== TEST EVALUATION =====
 print("\n=== TEST EVALUATION ===")
 
 # Predictions and probabilities on test set
